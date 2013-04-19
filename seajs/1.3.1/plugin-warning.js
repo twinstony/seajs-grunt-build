@@ -1,0 +1,1 @@
+define("seajs/plugin-warning",[],function(){var e=seajs.pluginSDK.Module,t=e._save;e._save=function(e,i){if(r.test(e)){var s=e.replace(r,"{{version}}"),s=n[s]||(n[s]=[]);s.push(e),1<s.length&&seajs.log("WARNING: This module has multiple versions:\n"+s.join("\n"),"warn")}t(e,i)};var n={},r=/(?:\d+\.)+\d+/}),seajs.use("seajs/plugin-warning");

@@ -205,7 +205,7 @@ transport : {
     },
     styles : {
         options : {
-            idleading : 'styles/'
+            idleading : 'dist/styles/'
         },
         files : [
             {
@@ -354,7 +354,7 @@ grunt build-app1
 
 ---
 
-最后的最后，将页面中的js路径替换成构建好的js，路径中app前面的部分一般都是以`php`,`java`等变量代替，
+最后的最后，将调试用的`rootConfig.js`去掉，然后页面中的`index.js`路径替换成构建好的js，路径中app前面的部分一般都是以`php`,`java`等变量代替，
 这样只需要在变量中定义好上线路径，前端基本就不需要在项目上线的时候关心这里啦：）
 
 ```

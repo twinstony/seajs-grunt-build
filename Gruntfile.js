@@ -20,7 +20,7 @@ module.exports = function (grunt) {
 
             styles : {
                 options : {
-                    idleading : 'styles/'
+                    idleading : 'dist/styles/'
                 },
 
                 files : [

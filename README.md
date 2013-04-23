@@ -1,5 +1,10 @@
 #如何使用Grunt构建一个中型项目？
 
+- pubdate: 2013-04-19 10:45
+- author: twinstony
+
+---
+
 本文前提是你已经了解了[seajs](http://seajs.org "seajs")和[grunt](http://gruntjs.com/ "grunt")。
 
 阅读的同时可参照完整示例：    [seajs-grunt-build](https://github.com/twinstony/seajs-grunt-build "seajs-grunt-build")
@@ -190,7 +195,7 @@ grunt.initConfig({
 
 ---
 
-**自定义模块`transport`的任务：**
+**自定义模块的`transport`任务：**
 
 ```javascript
 transport : {
@@ -235,7 +240,7 @@ transport : {
 
 ---
 
-**自定义模块`concat`的任务：**
+**自定义模块的`concat`任务：**
 
 ```javascript
 options : {

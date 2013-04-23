@@ -25,7 +25,7 @@ module.exports = function (grunt) {
 
                 files : [
                     {
-                        cwd : 'styles',
+                        cwd : 'styles/',
                         src : '**/*',
                         filter : 'isFile',
                         dest : '.build/styles'
@@ -53,33 +53,55 @@ module.exports = function (grunt) {
                 paths : ['.'],
                 include : 'relative'
             },
-            dialog : {
-                files : {
-                    'dist/styles/component/dialog/src/dialog.js' : ['.build/styles/component/dialog/src/dialog.js'],
-                    'dist/styles/component/dialog/src/dialog-debug.js' : ['.build/styles/component/dialog/src/dialog-debug.js']
-                }
+            styles : {
+                files: [
+                    {
+                        expand: true,
+                        cwd: '.build/',
+                        src: ['styles/**/*.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             },
             app1 : {
                 options : {
                     include : 'all'
                 },
-                files : {
-                    'dist/app/app1/index/src/index.js' : ['.build/app/app1/index/src/index.js'],
-                    'dist/app/app1/index/src/index-debug.js' : ['.build/app/app1/index/src/index-debug.js']
-                }
+                files: [
+                    {
+                        expand: true,
+                        cwd: '.build/',
+                        src: ['app/**/*.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             }
         },
 
         uglify : {
-            dialog : {
-                files : {
-                    'dist/styles/component/dialog/src/dialog.js' : 'dist/styles/component/dialog/src/dialog.js'
-                }
+            styles : {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['styles/**/*.js', '!styles/**/*-debug.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             },
             app1 : {
-                files : {
-                    'dist/app/app1/index/src/index.js' : 'dist/app/app1/index/src/index.js'
-                }
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['app/**/*.js', '!app/**/*-debug.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             }
         },
 
@@ -93,7 +115,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('build-styles', ['transport:styles', 'concat:dialog', 'uglify:dialog', 'clean']);
+    grunt.registerTask('build-styles', ['transport:styles', 'concat:styles', 'uglify:styles', 'clean']);
     grunt.registerTask('build-app1', ['transport:app1', 'concat:app1', 'uglify:app1', 'clean']);
 //    grunt.registerTask('default', ['clean']);
 };

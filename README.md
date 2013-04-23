@@ -238,21 +238,26 @@ transport : {
 **自定义模块`concat`的任务：**
 
 ```javascript
-concat : {
-    options : {
-        paths : ['.'],
-        include : 'relative'
-    },
-    dialog : {
-        files : {
-            'dist/styles/component/dialog/src/dialog.js' : ['.build/styles/component/dialog/src/dialog.js'],
-            'dist/styles/component/dialog/src/dialog-debug.js' : ['.build/styles/component/dialog/src/dialog-debug.js']
+options : {
+    paths : ['.'],
+    include : 'relative'
+},
+styles : {
+    files: [
+        {
+            expand: true,
+            cwd: '.build/',
+            src: ['styles/**/*.js'],
+            dest: 'dist/',
+            ext: '.js'
         }
-    }
+    ]
 }
 ```
 
-合并任务并没有什么特别的地方，就是将临时目录中的js合并后生成到`dist`目录中，只是需要额外说明下`options`：
+合并任务唯一要注意的地方就是其中`expand: true`的设置，该配置貌似是开启动态文件编译，就不用每个文件的合并策略都单独写啦！感谢 @Hsiaoming Yang 的指点。
+官方描述：[building-the-files-object-dynamically](http://gruntjs.com/configuring-tasks#building-the-files-object-dynamically "building-the-files-object-dynamically")
+，其它没有什么特别的地方，就是将临时目录中的js合并后生成到`dist`目录中，只是需要额外说明下`options`：
 
 * paths：与transport的paths相同。
 
@@ -292,10 +297,15 @@ concat : {
         options : {
             include : 'all'
         },
-        files : {
-            'dist/app/app1/index/src/index.js' : ['.build/app/app1/index/src/index.js'],
-            'dist/app/app1/index/src/index-debug.js' : ['.build/app/app1/index/src/index-debug.js']
-        }
+        files: [
+            {
+                expand: true,
+                cwd: '.build/',
+                src: ['app/**/*.js'],
+                dest: 'dist/',
+                ext: '.js'
+            }
+        ]
     }
 }
 ```
@@ -308,21 +318,36 @@ concat : {
 
 ```javascript
 uglify : {
-    dialog : {
-        files : {
-            'dist/styles/component/dialog/src/dialog.js' : 'dist/styles/component/dialog/src/dialog.js'
-        }
+    styles : {
+        files: [
+            {
+                expand: true,
+                cwd: 'dist/',
+                src: ['styles/**/*.js', '!styles/**/*-debug.js'],
+                dest: 'dist/',
+                ext: '.js'
+            }
+        ]
     },
     app1 : {
-        files : {
-            'dist/app/app1/index/src/index.js' : 'dist/app/app1/index/src/index.js'
-        }
+        files: [
+            {
+                expand: true,
+                cwd: 'dist/',
+                src: ['app/**/*.js', '!app/**/*-debug.js'],
+                dest: 'dist/',
+                ext: '.js'
+            }
+        ]
     }
 },
 clean : {
     spm : ['.build']
 }
 ```
+
+ps:`!styles/**/*-debug.js`的意思是`*-debug.js`文件不压缩。
+
 
 好了，接下来需要告诉grunt如何来执行这些任务：
 
@@ -332,7 +357,7 @@ clean : {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('build-styles', ['transport:styles', 'concat:dialog', 'uglify:dialog', 'clean']);
+    grunt.registerTask('build-styles', ['transport:styles', 'concat:styles', 'uglify:styles', 'clean']);
     grunt.registerTask('build-app1', ['transport:app1', 'concat:app1', 'uglify:app1', 'clean']);
 //  grunt.registerTask('default', ['clean']);
 ```
@@ -363,9 +388,6 @@ seajs.use("../../dist/app/app1/index/src/index.js")
 
 ---
 
-折磨人的构建工作终于全部完成，实际项目中可能需要处理下合并任务的路径问题，暂时还没处理这块儿的代码，
-希望大家在有了自己的构建样例后，能不吝赐教，谢谢。
-
 **最后感谢seajs,spm,grunt，让我的前端工作变得更轻松了。**
 
 以下是完整的`Gruntfile.js`：
@@ -390,11 +412,11 @@ module.exports = function (grunt) {
             },
             styles : {
                 options : {
-                    idleading : 'styles/'
+                    idleading : 'dist/styles/'
                 },
                 files : [
                     {
-                        cwd : 'styles',
+                        cwd : 'styles/',
                         src : '**/*',
                         filter : 'isFile',
                         dest : '.build/styles'
@@ -420,32 +442,54 @@ module.exports = function (grunt) {
                 paths : ['.'],
                 include : 'relative'
             },
-            dialog : {
-                files : {
-                    'dist/styles/component/dialog/src/dialog.js' : ['.build/styles/component/dialog/src/dialog.js'],
-                    'dist/styles/component/dialog/src/dialog-debug.js' : ['.build/styles/component/dialog/src/dialog-debug.js']
-                }
+            styles : {
+                files: [
+                    {
+                        expand: true,
+                        cwd: '.build/',
+                        src: ['styles/**/*.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             },
             app1 : {
                 options : {
                     include : 'all'
                 },
-                files : {
-                    'dist/app/app1/index/src/index.js' : ['.build/app/app1/index/src/index.js'],
-                    'dist/app/app1/index/src/index-debug.js' : ['.build/app/app1/index/src/index-debug.js']
-                }
+                files: [
+                    {
+                        expand: true,
+                        cwd: '.build/',
+                        src: ['app/**/*.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             }
         },
         uglify : {
-            dialog : {
-                files : {
-                    'dist/styles/component/dialog/src/dialog.js' : 'dist/styles/component/dialog/src/dialog.js'
-                }
+            styles : {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['styles/**/*.js', '!styles/**/*-debug.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             },
             app1 : {
-                files : {
-                    'dist/app/app1/index/src/index.js' : 'dist/app/app1/index/src/index.js'
-                }
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['app/**/*.js', '!app/**/*-debug.js'],
+                        dest: 'dist/',
+                        ext: '.js'
+                    }
+                ]
             }
         },
         clean : {
@@ -456,7 +500,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-cmd-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('build-styles', ['transport:styles', 'concat:dialog', 'uglify:dialog', 'clean']);
+    grunt.registerTask('build-styles', ['transport:styles', 'concat:styles', 'uglify:styles', 'clean']);
     grunt.registerTask('build-app1', ['transport:app1', 'concat:app1', 'uglify:app1', 'clean']);
 //    grunt.registerTask('default', ['clean']);
 };
